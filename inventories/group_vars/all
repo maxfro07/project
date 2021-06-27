@@ -1,0 +1,52 @@
+# Файл с общими переменными для всех хостов и всех групп
+
+# Указываем Ansible с какой версии Python работать.
+ansible_python_interpreter: /usr/bin/python3
+
+# Указываем Ansible на каких портах работают SSH на всех наших серверах
+ansible_port: 22
+
+# Указываем пользователя от имени которого будут выполняться все роли
+ansible_user: ubuntu
+
+
+# Список пользователей, которые будут добавлены на серверах
+users:
+  - {name: "a.ivshin", shell: "/bin/bash",  password: , key_file: "files/publickeys/a.ivshin.pub" }
+  - {name: "maxfro07", shell: "/bin/bash",  password: , key_file: "files/publickeys/maxfro07.pub" }
+  - {name: "ilya", shell: "/bin/bash", password: , key_file: "files/publickeys/ilya.pub"}
+  - {name: "pazuhin66", shell: "/bin/bash", password: , key_file: "files/publickeys/pazuhin66.pub"}
+
+# Список групп, в которые будут добавлены учётки на заданных серверах
+access_map:
+  test:
+    - {name: "a.ivshin", groups: "adm, sudo"}
+    - {name: "maxfro07", groups: "adm, sudo"}
+    - {name: "ilya", groups: "adm, sudo"}
+    - {name: "pazuhin66", groups: "adm, sudo"}
+  data_bases:
+    - {name: "a.ivshin", groups: "adm, sudo"}
+    - {name: "maxfro07", groups: "adm, sudo"}
+    - {name: "ilya", groups: "adm, sudo"}
+    - {name: "pazuhin66", groups: "adm, sudo"}
+  web_servers:
+    - {name: "a.ivshin", groups: "adm, sudo, www-data"}
+    - {name: "maxfro07", groups: "adm, sudo, www-data"}
+    - {name: "ilya", groups: "adm, sudo, www-data"}
+    - {name: "pazuhin66", groups: "adm, sudo, www-data"}
+  monitoring:
+    - {name: "a.ivshin", groups: "adm, sudo"}
+    - {name: "maxfro07", groups: "adm, sudo"}
+    - {name: "ilya", groups: "adm, sudo"}
+    - {name: "pazuhin66", groups: "adm, sudo"}
+
+# Список пользователей, которые будут удаленны из заданных групп серверов
+deny_map:
+  test:
+    - {name: "ansible"}
+  data_bases:
+    - {name: "ansible"}
+  web_servers:
+    - {name: "ansible"}
+  monitoring:
+    - {name: "ansible"}

@@ -1,0 +1,27 @@
+---
+
+- name: Установка базовых программ
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    name: "{{ item }}"
+    state: latest
+  loop:
+    - vim
+    - net-tools
+    - mc
+    - nano
+    - wget
+    - curl
+    - tree
+    - htop
+    - iotop
+    - bash-completion
+    - zip
+    - tzdata
+  tags: common
+
+- name: Установка временной зоны Europe/Moscow
+  timezone:
+    name: Europe/Moscow
+  tags: common, timezone

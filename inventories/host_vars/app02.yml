@@ -1,0 +1,33 @@
+# Указываем настройки для Firewall
+iptables:
+  accept_ports:
+    - {protocol: tcp, port: 80}
+    - {protocol: tcp, port: 443}
+
+
+###################### Unison ######################
+unison_configs:
+  - name: sync-wordpress
+    src: /var/www/wordpress
+    dest: ssh://app01.gmr.su//var/www/wordpress
+    ignore:
+      - "Path .git/*"
+      - "Name *.{log,tmp}"
+
+unison_cron:
+  hour: '*'
+  minute: '*/5'
+
+
+###################### Certbot ######################
+certbot_create_standalone_stop_services:
+  - nginx
+  # - apache
+  # - varnish
+certbot_create_if_missing: true
+certbot_certs:
+  - email: admin@gmr.su
+    domains:
+      - gmr.su
+
+

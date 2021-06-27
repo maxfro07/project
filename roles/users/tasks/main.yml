@@ -1,0 +1,52 @@
+---
+# tasks file for roles/users
+
+
+- name: "Добавление пользователя в систему"
+  user:
+    name: "{{item.0.name}}"
+    shell: "{{item.1.shell}}"
+    groups: "{{item.0.groups}}"
+    password: "{{item.1.password}}"
+  with_nested:
+    - "{{access_map[target]}}"
+    - "{{users}}"
+  when: item.0.name == item.1.name
+  tags: users
+
+
+- name: "Установка разрешений на домашние папки пользователей"
+  file:
+    path:  "{{item.1.home | default('/home/'+item.0.name) }}"
+    owner: "{{item.0.name}}"
+    group: "{{item.0.name}}"
+    recurse: yes
+  with_nested:
+    - "{{access_map[target]}}"
+    - "{{users}}"
+  when: item.0.name == item.1.name
+  tags: users
+
+
+- name: "Добавление публичного ключа"
+  authorized_key:
+    user: "{{item.0.name}}"
+    state: present
+    key: "{{lookup('file', item.1.key_file)}}"
+    comment: Ansible key
+  with_nested:
+    - "{{access_map[target]}}"
+    - "{{users}}"
+  when: item.1.key_file is defined and (item.0.name == item.1.name) 
+  tags: users
+
+
+- name: "Удаление пользователей из системы"
+  user:
+    name: "{{item.name}}"
+    remove: yes
+    state: absent
+  with_items:
+    - "{{deny_map[target]}}"
+  ignore_errors: yes
+  tags: users, users_deny

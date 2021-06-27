@@ -1,0 +1,48 @@
+
+# Укажем переменные для роли backup
+backup:
+  path_scripts: /opt/backup/scripts
+  source_folder: /var/www/wordpress
+  source_base_name: wordpress
+  source_base_user: wordpress
+  source_base_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          63626539656630646638666137373130323438353537613933353231393233643563363633666534
+          3233363265646164633339376431653930666561356566300a366531373565323164393437353735
+          33613162366564646561363134376430313966396662386462326264653631326234366531323532
+          3738363364623730380a346338393366366563346232656231343435656561346230343863346232
+          6437
+  destination_folder: /opt/backup/archive
+
+
+# Указываем настройки для Firewall
+iptables:
+  accept_ports:
+    - {protocol: tcp, port: 80}
+    - {protocol: tcp, port: 443}
+
+
+###################### Unison ######################
+unison_configs:
+  - name: sync-wordpress
+    src: /var/www/wordpress
+    dest: ssh://app02.gmr.su//var/www/wordpress
+    ignore:
+      - "Path .git/*"
+      - "Name *.{log,tmp}"
+
+unison_cron:
+  hour: '*'
+  minute: '*/3'
+
+
+###################### Certbot ######################
+certbot_create_standalone_stop_services:
+  - nginx
+  # - apache
+  # - varnish
+certbot_create_if_missing: true
+certbot_certs:
+  - email: admin@gmr.su
+    domains:
+      - gmr.su

@@ -1,0 +1,58 @@
+
+###################### Web server ######################
+# Настройки Nginx
+nginx:
+  type: webserver
+  vhost: "gmr.su"
+  vhost_path: "/var/www/wordpress"
+  auth:
+    user: "admin"
+    password: "$apr1$ufIv/T1R$ax3H5WSLXq7hjCVkl9Umv/"
+  ssl: true
+
+
+# Настройки PHP
+php_version: "7.4"
+
+
+###################### ProxySQL ######################
+# Общие настройки ProxySQL
+proxysql_admin_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          30633630386232633134363962643365643262376661306265343431613137346262346430666633
+          3035653939626564316134323765326337663666666136330a356532383134386338633964393435
+          38663738613531363138363736376566393362313532646633633737626166643064633136643632
+          3462333634663731360a666133333437656436313531303430363138643633383934316231326534
+          6139
+proxysql_version: 2.1
+
+# Указываем адреса MySQL nod кластера которые будут добавлены в ProxySQL
+proxysql_mysql_servers:
+   - address: db01.gmr.su
+     port: 3306
+     hostgroup: 1
+   - address: db02.gmr.su
+     port: 3306
+     hostgroup: 1
+   - address: db03.gmr.su
+     port: 3306
+     hostgroup: 1
+
+# Указываем какие пользователи MySQL будут заведены в ProxySQL
+proxysql_mysql_users:
+  - username: wordpress
+    password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          33656136633261396532396235626635303234303332313361316234623534623535383532393163
+          3432303638313338663936393162363665313737633038350a373965386564303834653862306130
+          33343864323936393638613866363764386337633962363362656663663337666233666563323033
+          3639366464333636340a366563326538383835356565666663343435353635616330373466313237
+          3130
+    default_hostgroup: 1
+
+# Определяет правила запросов MySQL в ProxySQL
+proxysql_mysql_query_rules:
+  - match_pattern: "^SELECT .* FOR UPDATE$"
+    destination_hostgroup: 0
+  - match_pattern: "^SELECT"
+    destination_hostgroup: 1

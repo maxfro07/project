@@ -1,0 +1,35 @@
+- name: Установка Unison
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+    name: unison
+    state: latest
+
+- name: Создаем группу www-data
+  group:
+    name: www-data
+    state: present
+
+- name: Создаем пользователя backup-data
+  user:
+    name: backup-data
+    group: www-data
+    password_lock: "yes"
+
+- name: Копируем SSH ключи в папку пользователя backup-data, для получения удаленного доступа по ssh
+  copy:
+    src: '{{ file.name }}'
+    mode: '{{ file.mode }}'
+    owner: backup-data
+    group: www-data
+    dest: '/home/backup-data/.ssh/'
+    force: yes
+  loop:
+    - mode: '600'
+      name: 'files/unison/user-key/id_rsa'
+    - mode: '644'
+      name: 'files/unison/user-key/id_rsa.pub'
+    - mode: '600'
+      name: 'files/unison/user-key/authorized_keys'
+  loop_control:
+    loop_var: file

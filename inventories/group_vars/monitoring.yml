@@ -1,0 +1,24 @@
+
+###################### Prometheus ######################
+# Настройки Prometheus
+prometheus:
+  node_exporter:
+    - {host: mon01.gmr.su}
+    - {host: app01.gmr.su}
+    - {host: app02.gmr.su}
+    - {host: db01.gmr.su}
+    - {host: db02.gmr.su}
+    - {host: db03.gmr.su}
+  alertmanager:
+    - {host: mon01.gmr.su}
+
+
+###################### Web server ######################
+# Настройки Nginx
+nginx:
+  type: proxy
+  vhost: "grafana.gmr.su"
+  proxy_host: localhost
+  proxy_port: 3000
+  ssl: true
+

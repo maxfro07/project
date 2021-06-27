@@ -1,0 +1,25 @@
+# Адреса всех наших серверов объединённые по проектам
+
+###################### Сервера баз данных ######################
+[data_bases]
+db01                    ansible_host=db01.gmr.su
+db02                    ansible_host=db02.gmr.su
+db03                    ansible_host=db03.gmr.su
+
+
+###################### Сервера приложений ######################
+[web_servers]
+app01                   ansible_host=app01.gmr.su
+app02                   ansible_host=app02.gmr.su
+
+
+###################### Мониторинг сервера ######################
+[monitoring]
+mon01                   ansible_host=mon01.gmr.su
+
+
+###################### Все сервера ######################
+[all_servers:children]
+data_bases
+web_servers
+monitoring
